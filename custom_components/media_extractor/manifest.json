@@ -1,0 +1,14 @@
+{
+  "domain": "media_extractor",
+  "name": "Media extractor Pro",
+  "documentation": "https://github.com/AlexxIT/MediaExtractorPro",
+  "requirements": [
+    "youtube_dl"
+  ],
+  "dependencies": [
+    "media_player"
+  ],
+  "codeowners": [
+    "AlexxIT"
+  ]
+}
