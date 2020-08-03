@@ -3,7 +3,7 @@
   "name": "Media extractor Pro",
   "documentation": "https://github.com/AlexxIT/MediaExtractorPro",
   "requirements": [
-    "youtube_dl"
+    "youtube_dl>=2020.7.28"
   ],
   "dependencies": [
     "media_player"

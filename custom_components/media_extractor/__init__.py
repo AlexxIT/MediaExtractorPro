@@ -11,6 +11,7 @@ from homeassistant.components.media_player import ATTR_MEDIA_SHUFFLE, \
     DOMAIN as MEDIA_PLAYER_DOMAIN
 from homeassistant.const import ATTR_ENTITY_ID
 from homeassistant.core import ServiceCall
+from homeassistant.helpers.network import get_url, NoURLAvailableError
 from youtube_dl import YoutubeDL
 
 from pychromecast.controllers.media import MediaController
@@ -42,12 +43,18 @@ def chromecast_monkey_patch():
 
 
 def setup(hass, hass_config):
+    try:
+        base_url = get_url(hass) + '/api/media_extractor?'
+        _LOGGER.debug(f"Media URL: {base_url}")
+    except NoURLAvailableError:
+        _LOGGER.error("Can't get hass URL")
+        return False
+
     chromecast_monkey_patch()
 
     formats = hass_config[DOMAIN].get('customize', {})
     def_format = hass_config[DOMAIN].get('default_query', 'best')
 
-    base_url = hass.config.api.base_url + '/api/media_extractor?'
     # token protects from evil queries
     token = str(uuid4())
 
