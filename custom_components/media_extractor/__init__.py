@@ -12,6 +12,7 @@ from homeassistant.components.media_player import ATTR_MEDIA_SHUFFLE, \
 from homeassistant.const import ATTR_ENTITY_ID
 from homeassistant.core import ServiceCall
 from homeassistant.helpers.network import get_url, NoURLAvailableError
+from homeassistant.helpers.typing import HomeAssistantType
 from youtube_dl import YoutubeDL
 
 from pychromecast.controllers.media import MediaController
@@ -42,7 +43,7 @@ def chromecast_monkey_patch():
     MediaController._send_start_play_media = monkey
 
 
-def setup(hass, hass_config):
+def setup(hass: HomeAssistantType, hass_config):
     try:
         base_url = get_url(hass) + '/api/media_extractor?'
         _LOGGER.debug(f"Media URL: {base_url}")
@@ -69,7 +70,7 @@ def setup(hass, hass_config):
 
     ydl = YoutubeDL({"quiet": True, "logger": _LOGGER})
 
-    async def play_media(call: ServiceCall):
+    def play_media(call: ServiceCall):
         """Main play_media service"""
         entity_id = call.data.get(ATTR_ENTITY_ID)
         content_type = call.data.get(ATTR_MEDIA_CONTENT_TYPE)
@@ -109,7 +110,7 @@ def setup(hass, hass_config):
 
     hass.services.register(DOMAIN, SERVICE_PLAY_MEDIA, play_media)
 
-    hass.http.register_view(MediaProcessView(ydl, token))
+    hass.http.register_view(MediaProcessView(ydl, token, hass))
 
     return True
 
@@ -119,20 +120,22 @@ class MediaProcessView(HomeAssistantView):
     name = 'api:media_extractor'
     requires_auth = False
 
-    def __init__(self, ydl: YoutubeDL, token: str):
+    def __init__(self, ydl: YoutubeDL, token: str, hass):
         self.ydl = ydl
         self.token = token
+        self.hass = hass
 
     async def get(self, request: Request) -> Response:
         if request.query.get('token') != self.token:
             return HTTPNotFound()
 
         self.ydl.params['format'] = request.query['format']
-        media = self.ydl.process_ie_result({
-            '_type': 'url',
-            'ie_key': request.query['ie_key'] or None,
-            'url': request.query['url']
-        }, download=False)
+        media = await self.hass.async_add_executor_job(
+            self.ydl.process_ie_result, {
+                '_type': 'url',
+                'ie_key': request.query['ie_key'] or None,
+                'url': request.query['url']
+            }, False)
 
         _LOGGER.debug(f"Redirect to {media['url']}")
 
