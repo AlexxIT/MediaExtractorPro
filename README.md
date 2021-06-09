@@ -1,5 +1,7 @@
 # MediaExtractorPro for Home Assistant
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+
 Переработанная версия компонента [Media Extractor](https://www.home-assistant.io/integrations/media_extractor/).
 
 Оригинальный компонент умеет получать прямые ссылки на видео и музыку с множества сайтов в Интернете. Но не поддерживает плейлисты.
@@ -7,6 +9,14 @@
 В этой версии я дописал поддержку плейлистов. Пока поддерживаются только [Chromecast](https://www.home-assistant.io/integrations/cast/)-устройства.
 
 Компонент получает прямую ссылку ТОЛЬКО на активное видео или музыку из плейлиста. При старте следующего трека - Chromecast-устройство делает запрос к вашему серверу Home Assistant. Если у вас "криво" настроен [внешний доступ](https://www.home-assistant.io/integrations/http/) - компонент может не работать.
+
+## Установка
+
+**Способ 1.** [HACS](https://hacs.xyz/)
+
+> HACS > Интеграции > 3 точки (правый верхний угол) > Пользовательские репозитории > URL: `AlexxIT/MediaExtractorPro`, Категория: Интеграция > Добавить > подождать > MediaExtractorPro > Установить
+
+**Способ 2.** Вручную скопируйте папку `media_extractor` из [latest release](https://github.com/AlexxIT/MediaExtractorPro/releases/latest) в директорию `/config/custom_components`.
 
 ## Настройка
 
